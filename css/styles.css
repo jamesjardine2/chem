@@ -1,0 +1,464 @@
+/* Heat Lab - styles.
+ *
+ * Sized for a classroom: every control is at least 44px, type is large
+ * enough to read from the back of the room on a whiteboard, and the layout
+ * reflows from iPad portrait up to 4K. Colours are drawn from a
+ * colour-blind-safe set (Okabe-Ito derived) and nothing relies on colour
+ * alone - temperatures always show a number too.
+ */
+
+:root {
+  --bg: #1b2433;
+  --bg2: #232e40;
+  --panel: #ffffff;
+  --panel2: #f2f6f9;
+  --ink: #17212e;
+  --ink2: #4a5b6d;
+  --line: #ccd8e0;
+  --hot: #e2571c;
+  --cold: #1f6ea8;
+  --accent: #f5a524;
+  --ok: #167a5b;
+  --shadow: 0 2px 10px rgba(12, 22, 34, .18);
+  --radius: 12px;
+  --tap: 44px;
+  --toolbar-h: 62px;
+  --shelf-w: 188px;
+  --side-w: 330px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  /* Stop iOS double-tap zoom and long-press menus fighting the drag. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+h1, h2, h3 { margin: 0; }
+
+/* -------------------------------------------------------------- buttons */
+
+.btn {
+  min-height: var(--tap);
+  padding: 0 20px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--panel2);
+  color: var(--ink);
+}
+.btn-big { min-height: 56px; font-size: 1.12rem; padding: 0 28px; }
+.btn-primary { background: var(--hot); color: #fff; }
+.btn-primary:hover { background: #c94a15; }
+.btn-ghost { background: transparent; border-color: var(--line); color: #e9f0f6; }
+.btn-ghost:hover { background: rgba(255, 255, 255, .08); }
+/* The same button on a light sheet needs dark ink to be readable. */
+.sheet .btn-ghost { color: var(--ink); border-color: var(--line); }
+.sheet .btn-ghost:hover { background: var(--panel2); border-color: var(--hot); }
+.btn:focus-visible, .tool:focus-visible, .shelfTile:focus-visible,
+.iconBtn:focus-visible, .csCard:focus-visible, .pqOpt:focus-visible,
+.segBtn:focus-visible, canvas:focus-visible {
+  outline: 3px solid #ffd98a;
+  outline-offset: 2px;
+}
+
+.iconBtn {
+  width: var(--tap); height: var(--tap);
+  border: none; border-radius: 10px;
+  background: transparent; color: var(--ink2);
+  display: grid; place-items: center;
+}
+.iconBtn:hover { background: var(--panel2); }
+.iconBtn svg { width: 22px; height: 22px; }
+
+/* -------------------------------------------------------------- overlays */
+
+.overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(10, 16, 26, .82);
+  display: grid; place-items: center;
+  padding: 20px;
+  overflow: auto;
+}
+.overlay[hidden] { display: none; }
+
+.startCard {
+  width: min(760px, 100%);
+  background: var(--panel);
+  border-radius: 20px;
+  padding: 28px 30px 22px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+.startHead { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.startFlame svg { width: 56px; height: 56px; display: block; }
+.startCard h1 { font-size: 2.1rem; letter-spacing: -.5px; }
+.startSub { margin: 2px 0 0; color: var(--ink2); font-size: 1.05rem; font-weight: 600; }
+
+.lisc { background: var(--panel2); border-radius: 14px; padding: 18px 20px; }
+.lisc h2 {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--cold); margin-bottom: 4px;
+}
+.lisc h2 + p, .lisc p { margin: 0 0 14px; font-size: 1.1rem; line-height: 1.45; }
+.lisc .scLead { font-weight: 700; margin: 0 0 6px; }
+.lisc ul { margin: 0; padding-left: 22px; }
+.lisc li { font-size: 1.06rem; line-height: 1.5; margin-bottom: 6px; }
+.liscCompact li, .liscCompact p { font-size: 1rem; }
+
+.startRow { margin: 18px 0 4px; }
+.levelPick { border: none; margin: 0; padding: 0; }
+.levelPick legend {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--ink2); font-weight: 700; padding: 0 0 8px;
+}
+.segmented { display: inline-flex; background: var(--panel2); border-radius: 12px; padding: 4px; gap: 4px; }
+.segBtn {
+  min-height: 42px; padding: 0 20px; border: none; border-radius: 9px;
+  background: transparent; font-weight: 700; color: var(--ink2);
+}
+.segBtn[aria-checked="true"] { background: var(--cold); color: #fff; }
+
+.startActions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.privacy { margin: 16px 0 0; font-size: .85rem; color: var(--ink2); }
+
+.sheet {
+  width: min(900px, 100%);
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 20px 22px 22px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+.sheetHead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sheetHead h2 { font-size: 1.5rem; }
+
+/* ------------------------------------------------------------- toolbar */
+
+#app { height: 100%; display: flex; flex-direction: column; }
+#app[aria-hidden="true"] { visibility: hidden; }
+
+#toolbar {
+  height: var(--toolbar-h);
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 12px;
+  background: var(--bg2);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.brand { display: flex; align-items: center; gap: 8px; color: #fff; flex: 0 0 auto; }
+.brandMark { width: 26px; height: 26px; }
+.brandName { font-weight: 800; font-size: 1.1rem; letter-spacing: -.2px; }
+
+.tools { display: flex; align-items: center; gap: 6px; overflow-x: auto; flex: 1 1 auto; scrollbar-width: thin; }
+.tools::-webkit-scrollbar { height: 5px; }
+.tools::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .25); border-radius: 3px; }
+
+.tool {
+  flex: 0 0 auto;
+  min-height: var(--tap); min-width: var(--tap);
+  padding: 0 11px;
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 2px solid transparent; border-radius: 11px;
+  background: rgba(255, 255, 255, .07);
+  color: #dde7f0;
+  font-weight: 700; font-size: .9rem;
+  white-space: nowrap;
+}
+.tool svg { width: 20px; height: 20px; flex: 0 0 auto; }
+.tool:hover { background: rgba(255, 255, 255, .15); }
+.tool[aria-pressed="true"] { background: var(--accent); color: #2a1a00; border-color: #ffd98a; }
+.toolSep { width: 1px; height: 28px; background: rgba(255, 255, 255, .16); flex: 0 0 auto; }
+.levelChip { font-size: .86rem; font-weight: 800; }
+
+/* ---------------------------------------------------------------- main */
+
+/* Positioned and clipped so the off-canvas side panel on narrow screens
+   cannot add a horizontal scroll to the page. */
+#main { flex: 1 1 auto; display: flex; min-height: 0; position: relative; overflow: hidden; }
+
+#shelf {
+  flex: 0 0 var(--shelf-w);
+  background: var(--bg2);
+  border-right: 1px solid rgba(255, 255, 255, .08);
+  overflow-y: auto;
+  padding: 10px 8px 24px;
+}
+#shelfInner { display: flex; flex-direction: column; gap: 10px; }
+
+/* Tabbed shelf: one section at a time, so nothing has to be scrolled for. */
+.shelfTabs {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+  position: sticky; top: -10px; z-index: 2;
+  background: var(--bg2); padding: 2px 0 6px;
+}
+.shelfTab {
+  min-height: 34px; padding: 0 4px;
+  border: 2px solid rgba(255, 255, 255, .12); border-radius: 9px;
+  background: rgba(255, 255, 255, .05); color: #b9c9d8;
+  font-size: .72rem; font-weight: 800; letter-spacing: .01em;
+}
+.shelfTab[aria-selected="true"] { background: var(--accent); color: #2a1a00; border-color: #ffd98a; }
+.shelfGroup[hidden] { display: none; }
+.shelfGroup h3 {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #8fa4b8; margin: 0 0 6px 4px; font-weight: 800;
+}
+.shelfRow { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+.shelfTile {
+  min-height: 72px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 6px 3px;
+  border: 2px solid rgba(255, 255, 255, .1);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .06);
+  color: #e5edf5;
+  font-size: .72rem; font-weight: 700; line-height: 1.15; text-align: center;
+  touch-action: none;
+}
+.shelfTile:hover { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .3); }
+.shelfTile canvas { display: block; pointer-events: none; }
+.shelfTile.dragging { opacity: .45; }
+
+#stage { flex: 1 1 auto; position: relative; min-width: 0; background: #e7eef2; }
+#bench { display: block; width: 100%; height: 100%; touch-action: none; }
+
+#toast {
+  position: absolute; left: 50%; top: 14px; transform: translate(-50%, -14px);
+  background: rgba(12, 22, 34, .92); color: #fff;
+  padding: 11px 20px; border-radius: 12px;
+  font-weight: 700; font-size: 1rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  max-width: 80%; text-align: center;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+#readout {
+  position: absolute; left: 12px; bottom: 12px;
+  display: flex; gap: 8px; flex-wrap: wrap;
+  pointer-events: none;
+}
+.roChip {
+  background: rgba(12, 22, 34, .86); color: #fff;
+  padding: 7px 12px; border-radius: 10px;
+  font-size: .86rem; font-weight: 700;
+  display: flex; align-items: center; gap: 7px;
+}
+.roDot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+
+.keyHint {
+  position: absolute; right: 12px; bottom: 12px;
+  background: rgba(12, 22, 34, .7); color: #cfdbe6;
+  padding: 5px 10px; border-radius: 8px; font-size: .74rem; font-weight: 600;
+  opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.keyHint.show { opacity: 1; }
+kbd {
+  background: rgba(255, 255, 255, .16); border-radius: 4px;
+  padding: 1px 5px; font-family: inherit; font-size: .95em;
+}
+
+/* --------------------------------------------------------- side panels */
+
+#side {
+  flex: 0 0 var(--side-w);
+  background: var(--panel2);
+  border-left: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  min-height: 0; overflow-y: auto;
+  padding: 10px; gap: 10px;
+}
+.panel {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 12px 14px 14px;
+  box-shadow: var(--shadow);
+  flex: 0 0 auto;
+}
+.panel[hidden] { display: none; }
+.panelGrow { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 250px; }
+.panelHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.panelHead h2 { font-size: 1rem; color: var(--ink); }
+
+.graphWrap { flex: 1 1 auto; position: relative; min-height: 200px; }
+#graph { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.legend { display: flex; gap: 7px; }
+.legDot {
+  width: 20px; height: 20px; border-radius: 6px;
+  display: grid; place-items: center;
+  font-size: .68rem; font-weight: 800; color: #fff;
+}
+.legDot.off { opacity: .28; }
+
+.chGoal { margin: 0 0 10px; font-size: 1.02rem; font-weight: 600; line-height: 1.4; }
+.chBar { height: 10px; background: var(--panel2); border-radius: 6px; overflow: hidden; }
+.chBarFill { height: 100%; width: 0; background: var(--ok); border-radius: 6px; transition: width .25s; }
+.chNote { margin: 8px 0 0; font-size: .92rem; color: var(--ink2); min-height: 1.2em; }
+.chTimer { margin-top: 8px; font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.chTimer[hidden] { display: none; }
+.chDone { color: var(--ok); font-weight: 800; }
+.chFail { color: var(--hot); font-weight: 700; }
+
+.idRow { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.idBtn {
+  min-height: var(--tap); border: 2px solid var(--line); border-radius: 10px;
+  background: #fff; font-weight: 700; font-size: .92rem; text-align: left; padding: 0 12px;
+}
+.idBtn:hover { border-color: var(--cold); }
+.idBtn.right { background: #e3f5ee; border-color: var(--ok); color: #0c5c44; }
+.idBtn.wrong { background: #fdeee7; border-color: var(--hot); }
+
+.pqText { margin: 0 0 10px; font-size: 1.02rem; font-weight: 600; line-height: 1.4; }
+.pqOptions { display: flex; flex-direction: column; gap: 6px; }
+.pqOpt {
+  min-height: var(--tap); border: 2px solid var(--line); border-radius: 10px;
+  background: #fff; font-weight: 700; font-size: .95rem; text-align: left; padding: 8px 12px;
+}
+.pqOpt:hover { border-color: var(--cold); }
+.pqOpt[aria-pressed="true"] { background: #e8f1fa; border-color: var(--cold); }
+.pqOpt.locked { pointer-events: none; }
+.pqResult {
+  margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+  background: var(--panel2); font-size: .95rem; line-height: 1.45;
+}
+.pqResult b { display: block; font-size: 1.05rem; margin-bottom: 3px; }
+.pqSkip { margin-top: 8px; font-size: .85rem; background: none; border: none; color: var(--ink2); text-decoration: underline; padding: 6px; }
+
+/* ---------------------------------------------------------- challenges */
+
+.csGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.csCard {
+  text-align: left; padding: 13px 14px;
+  border: 2px solid var(--line); border-radius: 13px;
+  background: #fff; display: flex; flex-direction: column; gap: 5px;
+  min-height: 96px;
+}
+.csCard:hover { border-color: var(--hot); }
+.csCard .csTitle { font-weight: 800; font-size: 1.02rem; display: flex; align-items: center; gap: 7px; }
+.csCard .csGoal { font-size: .88rem; color: var(--ink2); line-height: 1.35; }
+.csCard.done { background: #f2fbf7; border-color: var(--ok); }
+.csTick { width: 20px; height: 20px; color: var(--ok); flex: 0 0 auto; }
+.csTick svg { width: 100%; height: 100%; }
+
+.helpBody { display: grid; gap: 14px; }
+.helpList, .helpRules ul { margin: 0; padding-left: 22px; }
+.helpList li, .helpRules li { font-size: 1rem; line-height: 1.55; margin-bottom: 5px; }
+.helpRules { background: var(--panel2); border-radius: 12px; padding: 14px 16px; }
+.helpRules h3 { font-size: .95rem; margin-bottom: 6px; color: var(--cold); }
+
+.winBanner {
+  position: fixed; left: 50%; top: 22%; transform: translate(-50%, -20px) scale(.92);
+  z-index: 70;
+  background: #fff; color: var(--ink);
+  padding: 22px 34px; border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .4);
+  font-size: 1.7rem; font-weight: 800; text-align: center;
+  opacity: 0; transition: opacity .25s, transform .25s;
+  pointer-events: none;
+}
+.winBanner[hidden] { display: none; }
+.winBanner.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.winBanner small { display: block; font-size: .95rem; font-weight: 600; color: var(--ink2); margin-top: 6px; }
+
+.sideToggle {
+  display: none;
+  position: fixed; right: 14px; bottom: 14px; z-index: 40;
+  width: 54px; height: 54px; border-radius: 50%;
+  border: none; background: var(--bg2); color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+  place-items: center;
+}
+.sideToggle svg { width: 24px; height: 24px; }
+
+/* -------------------------------------------------------- responsive */
+
+/* Narrow: iPad portrait, iPad landscape and phones. Below this the bench
+   needs the full width, so the shelf becomes a bottom strip and the graph
+   panel slides over the bench when it is asked for. */
+@media (max-width: 1100px) {
+  :root { --toolbar-h: 56px; }
+  #main { flex-direction: column; }
+  #shelf {
+    order: 2; flex: 0 0 auto;
+    max-height: 168px;
+    border-right: none; border-top: 1px solid rgba(255, 255, 255, .1);
+    overflow-x: auto; overflow-y: hidden;
+    padding: 8px;
+  }
+  #shelfInner { flex-direction: row; gap: 14px; align-items: flex-start; }
+  .shelfGroup { flex: 0 0 auto; }
+  .shelfTabs {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(74px, auto);
+    position: sticky; left: 0; top: 0; padding: 0 6px 0 0;
+    background: linear-gradient(90deg, var(--bg2) 82%, rgba(35, 46, 64, 0));
+  }
+  .shelfTab { min-height: var(--tap); }
+  .shelfRow { grid-template-columns: repeat(2, 84px); }
+  #stage { order: 1; flex: 1 1 auto; }
+  #side {
+    order: 0;
+    position: absolute; inset: 0 0 auto auto;
+    width: min(360px, 92vw); max-height: calc(100% - 176px);
+    z-index: 30;
+    border-left: 1px solid var(--line);
+    border-bottom-left-radius: 14px;
+    box-shadow: -6px 6px 24px rgba(0, 0, 0, .28);
+    transform: translateX(105%); transition: transform .25s;
+  }
+  #side.open { transform: translateX(0); }
+  .sideToggle { display: grid; }
+  .keyHint { display: none; }
+  .brandName { display: none; }
+  .tool span:not(.levelChip) { display: none; }
+  .tool { padding: 0 13px; }
+}
+
+/* Between phone and desktop the labels are the first thing to go, so no
+   tool button ever gets clipped off the end of the row. */
+@media (max-width: 1400px) and (min-width: 1101px) {
+  .tool span:not(.levelChip) { display: none; }
+  .tool { padding: 0 13px; }
+}
+
+/* Very wide: a whiteboard or a 4K display. Scale the type and controls up so
+   it is still readable from the back of the room. */
+@media (min-width: 1800px) {
+  :root { --toolbar-h: 76px; --shelf-w: 232px; --side-w: 420px; --tap: 52px; }
+  .tool { font-size: 1.02rem; padding: 0 15px; }
+  .tool svg { width: 24px; height: 24px; }
+  .shelfTile { min-height: 86px; font-size: .84rem; }
+  .shelfTab { min-height: 44px; font-size: .84rem; }
+  .brandName { font-size: 1.3rem; }
+  .panelHead h2 { font-size: 1.15rem; }
+  .chGoal, .pqText { font-size: 1.14rem; }
+  .pqOpt, .idBtn { font-size: 1.05rem; }
+  .roChip { font-size: 1rem; }
+}
+
+@media (min-width: 2600px) {
+  :root { --toolbar-h: 92px; --shelf-w: 280px; --side-w: 520px; --tap: 60px; }
+  html { font-size: 20px; }
+}
+
+/* Students with reduced-motion turned on still get every result, just
+   without the drifting chunks and flickering glow. */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: .01ms !important; }
+  .winBanner { transition: none; }
+}
+
+/* Keep it legible if the OS forces high contrast. */
+@media (prefers-contrast: more) {
+  .tool { border-color: rgba(255, 255, 255, .5); }
+  .csCard, .pqOpt, .idBtn { border-width: 3px; }
+}

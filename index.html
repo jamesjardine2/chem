@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b2433">
+<meta name="description" content="Heat Lab - an interactive heat and energy transfer lab for primary science. Works offline, no accounts, no data collection.">
+<title>Heat Lab</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23e2571c'/><path d='M16 5c3 5-2 6 0 10 2-1 3-3 3-5 3 4 3 12-3 14-6-2-6-10-3-14 0 2 1 4 3 5-2-4 3-5 0-10z' fill='%23ffd98a'/></svg>">
+</head>
+<body>
+
+<!-- Icon sprite. Inline so there is nothing to fetch at runtime. -->
+<svg style="display:none" aria-hidden="true"><defs>
+  <symbol id="i-energy" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><rect x="2" y="6" width="15" height="12" rx="3" fill="currentColor"/><path d="M17 11l5-3v8l-5-3z" fill="currentColor"/></symbol>
+  <symbol id="i-lens" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="8" cy="9" r="1.4" fill="currentColor"/><circle cx="12" cy="11" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-graph" viewBox="0 0 24 24"><path d="M3 20V4M3 20h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M6 15l4-6 3 3 5-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4.5" height="16" rx="1.5" fill="currentColor"/><rect x="13.5" y="4" width="4.5" height="16" rx="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-fast" viewBox="0 0 24 24"><path d="M3 5l8 7-8 7zM13 5l8 7-8 7z" fill="currentColor"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h3l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9h3l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 3v18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M6 4h12l-2.5 4L18 12H6z" fill="currentColor"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9.3 9.2a2.8 2.8 0 1 1 3.5 2.7v1.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12.6" cy="17" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M12 3.5a2.6 2.6 0 0 1 2.6 2.6v7a4.6 4.6 0 1 1-5.2 0v-7A2.6 2.6 0 0 1 12 3.5z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="17.4" r="2.2" fill="currentColor"/></symbol>
+  <symbol id="i-predict" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 1 3.5 10.9V17h-7v-3.1A6 6 0 0 1 12 3z" fill="currentColor"/><path d="M9.5 20h5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-tick" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<!-- ------------------------------------------------------- start screen -->
+<div id="startScreen" class="overlay" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+  <div class="startCard">
+    <div class="startHead">
+      <div class="startFlame" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><path d="M24 3c5 8-4 10 0 17 3-2 5-5 5-9 5 7 6 20-5 24-11-4-10-17-5-24 0 4 2 7 5 9-4-7 5-9 0-17z" fill="#f5a524"/><path d="M24 20c2 4-2 5 0 8 1-1 2-2 2-4 3 4 3 10-2 12-5-2-5-8-2-12 0 2 1 3 2 4-2-3 2-4 0-8z" fill="#fff3d0"/></svg>
+      </div>
+      <div>
+        <h1 id="startTitle">Heat Lab</h1>
+        <p class="startSub">Heating, cooling and energy transfer</p>
+      </div>
+    </div>
+
+    <div class="lisc">
+      <h2>Learning Intention</h2>
+      <p id="liText"></p>
+      <h2>Success Criteria</h2>
+      <p class="scLead">I can:</p>
+      <ul id="scList"></ul>
+    </div>
+
+    <div class="startRow">
+      <fieldset class="levelPick">
+        <legend>Year level words</legend>
+        <div class="segmented" id="levelPick" role="radiogroup" aria-label="Year level words"></div>
+      </fieldset>
+    </div>
+
+    <div class="startActions">
+      <button id="startBtn" class="btn btn-primary btn-big">Start the lab</button>
+      <button id="startChallenges" class="btn btn-ghost btn-big">See the missions</button>
+    </div>
+    <p class="privacy">Works offline. No accounts, no logins, nothing saved or sent anywhere.</p>
+  </div>
+</div>
+
+<!-- --------------------------------------------------------------- app -->
+<div id="app" aria-hidden="true">
+
+  <header id="toolbar">
+    <div class="brand">
+      <svg class="brandMark" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3c5 8-4 10 0 17 3-2 5-5 5-9 5 7 6 20-5 24-11-4-10-17-5-24 0 4 2 7 5 9-4-7 5-9 0-17z" fill="#f5a524"/></svg>
+      <span class="brandName">Heat Lab</span>
+    </div>
+
+    <div class="tools" role="toolbar" aria-label="Lab tools">
+      <button class="tool" id="btnEnergy" aria-pressed="false"><svg><use href="#i-energy"/></svg><span data-i18n="tool.energy"></span></button>
+      <button class="tool" id="btnCamera" aria-pressed="false"><svg><use href="#i-camera"/></svg><span data-i18n="tool.camera"></span></button>
+      <button class="tool" id="btnLens" aria-pressed="false"><svg><use href="#i-lens"/></svg><span data-i18n="tool.lens"></span></button>
+      <button class="tool" id="btnGraph" aria-pressed="true"><svg><use href="#i-graph"/></svg><span data-i18n="tool.graph"></span></button>
+      <span class="toolSep" aria-hidden="true"></span>
+      <button class="tool" id="btnPlay" aria-label="Pause"><svg><use href="#i-pause" id="playIcon"/></svg><span id="playLabel" data-i18n="tool.pause"></span></button>
+      <button class="tool" id="btnSpeed" aria-label="Speed"><svg><use href="#i-fast"/></svg><span id="speedLabel">1&times;</span></button>
+      <button class="tool" id="btnReset"><svg><use href="#i-reset"/></svg><span data-i18n="tool.reset"></span></button>
+      <span class="toolSep" aria-hidden="true"></span>
+      <button class="tool" id="btnSound" aria-pressed="true"><svg><use href="#i-sound" id="soundIcon"/></svg><span data-i18n="tool.sound"></span></button>
+      <button class="tool" id="btnChallenges"><svg><use href="#i-flag"/></svg><span data-i18n="tool.challenges"></span></button>
+      <button class="tool" id="btnLevel"><span class="levelChip" id="levelChip">Y3/4</span></button>
+      <button class="tool" id="btnHelp" aria-label="Help"><svg><use href="#i-help"/></svg></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- shelf -->
+    <aside id="shelf" aria-label="Shelf of things to use">
+      <div id="shelfInner"></div>
+    </aside>
+
+    <!-- bench -->
+    <section id="stage">
+      <canvas id="bench" tabindex="0" aria-label="Lab bench. Use the shelf buttons to add items, then arrow keys to move the selected item."></canvas>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <div id="readout" aria-live="off"></div>
+      <div id="keyHint" class="keyHint">Arrow keys move &middot; <kbd>Enter</kbd> drop &middot; <kbd>Del</kbd> remove</div>
+    </section>
+
+    <!-- side panels -->
+    <aside id="side" aria-label="Graph and missions">
+      <div class="panel" id="panelChallenge" hidden>
+        <div class="panelHead">
+          <h2 id="chTitle"></h2>
+          <button class="iconBtn" id="chExit" aria-label="Back to free explore"><svg><use href="#i-close"/></svg></button>
+        </div>
+        <p class="chGoal" id="chGoal"></p>
+        <div class="chBar"><div class="chBarFill" id="chBarFill"></div></div>
+        <p class="chNote" id="chNote"></p>
+        <div id="chIdentify" hidden></div>
+        <div class="chTimer" id="chTimer" hidden></div>
+      </div>
+
+      <div class="panel" id="panelPredict" hidden>
+        <div class="panelHead"><h2 data-i18n="predict.ask"></h2></div>
+        <p class="pqText" id="pqText"></p>
+        <div id="pqOptions" class="pqOptions"></div>
+        <div id="pqResult" class="pqResult" hidden></div>
+      </div>
+
+      <div class="panel panelGrow" id="panelGraph">
+        <div class="panelHead">
+          <h2 data-i18n="graph.title"></h2>
+          <div id="graphLegend" class="legend"></div>
+        </div>
+        <div class="graphWrap"><canvas id="graph"></canvas></div>
+      </div>
+    </aside>
+  </main>
+
+  <button id="sideToggle" class="sideToggle" aria-label="Show or hide the graph panel"><svg><use href="#i-graph"/></svg></button>
+</div>
+
+<!-- ------------------------------------------------------ mission sheet -->
+<div id="challengeSheet" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="csTitle">
+  <div class="sheet">
+    <div class="sheetHead">
+      <h2 id="csTitle" data-i18n="ch.title"></h2>
+      <button class="iconBtn" id="csClose" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+    </div>
+    <div class="csGrid" id="csGrid"></div>
+    <button class="btn btn-ghost" id="csFree" data-i18n="ch.free"></button>
+  </div>
+</div>
+
+<!-- ---------------------------------------------------------- help sheet -->
+<div id="helpSheet" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="hsTitle">
+  <div class="sheet">
+    <div class="sheetHead">
+      <h2 id="hsTitle">How to use the lab</h2>
+      <button class="iconBtn" id="hsClose" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+    </div>
+    <div class="helpBody">
+      <ul class="helpList">
+        <li><b>Drag</b> anything from the shelf onto the bench, a heater, or into a pot.</li>
+        <li><b>Stack</b> things on each other to move heat between them.</li>
+        <li><b>Slide</b> a heater left for cold, right for hot.</li>
+        <li><b>Drag a thermometer</b> onto anything to read its temperature and draw its graph line.</li>
+        <li><b>Pour</b> one container onto another to mix liquids.</li>
+        <li>Liquids always need a container.</li>
+      </ul>
+      <div class="helpRules">
+        <h3>The rules this lab follows</h3>
+        <ul>
+          <li>Heat energy always moves from hotter to colder. Cold never flows.</li>
+          <li>Energy is never used up. It only moves, and the totals always add up.</li>
+          <li>While something melts, freezes, boils or condenses, its temperature stays flat.</li>
+        </ul>
+      </div>
+      <div class="lisc liscCompact">
+        <h2>Learning Intention</h2>
+        <p id="liText2"></p>
+        <h2>Success Criteria</h2>
+        <p class="scLead">I can:</p>
+        <ul id="scList2"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="winBanner" class="winBanner" hidden aria-live="polite"></div>
+
+<script src="js/data/substances.js"></script>
+<script src="js/data/language.js"></script>
+<script src="js/data/challenges.js"></script>
+<script src="js/model/thermo.js"></script>
+<script src="js/model/world.js"></script>
+<script src="js/render/art.js"></script>
+<script src="js/render/particles.js"></script>
+<script src="js/render/bench.js"></script>
+<script src="js/render/graph.js"></script>
+<script src="js/audio/audio.js"></script>
+<script src="js/ui/shelf.js"></script>
+<script src="js/ui/interaction.js"></script>
+<script src="js/ui/app.js"></script>
+</body>
+</html>
