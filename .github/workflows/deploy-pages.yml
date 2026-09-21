@@ -1,0 +1,67 @@
+# Publishes Heat Lab to GitHub Pages at https://jamesjardine2.github.io/chem
+#
+# The `enablement: true` below is what switches Pages on, using this
+# workflow's own token, so nobody has to touch the repository settings.
+# That is also why the pages and id-token permissions are declared.
+#
+# The branch list covers the repository's current default branch plus the
+# names it is most likely to be renamed to later, so renaming the default
+# branch will not silently stop deployments.
+name: Deploy Heat Lab to GitHub Pages
+
+on:
+  push:
+    branches:
+      - claude/heat-lab-simulation-t0eurn
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # The model tests have no dependencies, so there is nothing to install.
+      # Publishing a simulation whose physics is broken would be worse than
+      # not publishing at all, so the deploy waits on these passing.
+      - name: Run model tests
+        run: node test/run.js
+
+  deploy:
+    needs: test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # The whole repo: index.html sits at the root and the site loads
+          # css/ and js/ with relative paths, which is what a project page
+          # served from /chem/ needs.
+          path: "."
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
