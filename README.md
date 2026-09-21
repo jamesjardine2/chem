@@ -113,6 +113,27 @@ Everything a teacher would want to change lives in `js/data/`.
 - **`language.js`** — every piece of on-screen wording, in both Years 3/4 and
   Years 5/6 vocabulary, plus the Learning Intention and Success Criteria.
 
+## Publishing it for a class
+
+The repository carries a workflow that runs the tests and then deploys the
+site to GitHub Pages on every push to the default branch.
+
+GitHub Pages has to be switched on once by the repository owner. A workflow
+cannot do it: enabling Pages needs a token whose installation carries the
+Pages permission, and a workflow can only narrow the permissions it already
+has, never add one. So the first run stops with an explanation until this is
+done:
+
+1. Open **Settings -> Pages** (`/settings/pages`).
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Re-run the workflow from the Actions tab.
+
+After that every push redeploys on its own. The site is served from a
+subpath, so every asset is referenced with a relative path; nothing in the
+source assumes it is at a domain root.
+
+Pages only serves a private repository on a paid plan. This one is public.
+
 ## Tests
 
 ```

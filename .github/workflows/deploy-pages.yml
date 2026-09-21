@@ -51,10 +51,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # enablement: true asks GitHub to create the Pages site using this
+      # workflow's own token. That only works if the token's installation
+      # already carries the Pages permission - declaring it above can narrow
+      # an installation's scopes but never add one - so on many repositories
+      # this fails with "Resource not accessible by integration". The next
+      # step turns that into an instruction instead of a puzzle.
       - name: Configure Pages
+        id: configure
+        continue-on-error: true
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Pages needs enabling once by hand
+        if: steps.configure.outcome == 'failure'
+        run: |
+          echo "::error title=Enable GitHub Pages once::Pages is not enabled on this repository and this workflow is not permitted to enable it."
+          echo ""
+          echo "Do this once, then everything after it is automatic:"
+          echo "  1. Open  https://github.com/${{ github.repository }}/settings/pages"
+          echo "  2. Under 'Build and deployment', set Source to 'GitHub Actions'"
+          echo "  3. Re-run this workflow (Actions tab -> this run -> Re-run all jobs)"
+          echo ""
+          echo "The site will then be served at ${{ github.event.repository.homepage || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}"
+          exit 1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
