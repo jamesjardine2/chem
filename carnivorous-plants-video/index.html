@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>How did carnivorous plants evolve</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Liberation Sans";
+        src: url("fonts/LiberationSans-Regular.ttf");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "Liberation Sans";
+        src: url("fonts/LiberationSans-Bold.ttf");
+        font-weight: 700;
+      }
+      :root {
+        --bg: #f3f8ec;
+        --ink: #10281f;
+        --green: #2e9b57;
+        --green-dark: #1f7a45;
+        --green-pale: #a6d8a0;
+        --amber: #f2a93b;
+        --amber-light: #ffc857;
+        --blue: #3b8fd9;
+        --blue-pale: #cfe6f7;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        font-family: "Liberation Sans", Arial, sans-serif;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .inner {
+        position: absolute;
+        inset: 0;
+      }
+      #art3 {
+        overflow: visible;
+      }
+      svg.art {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+      }
+
+      /* ---- captions: 52px, high contrast, bottom of frame ---- */
+      .caption {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        bottom: 36px;
+        display: flex;
+        justify-content: center;
+      }
+      .caption > div {
+        max-width: 1780px;
+        background: #ffffff;
+        color: var(--ink);
+        border: 5px solid var(--green-dark);
+        border-radius: 30px;
+        padding: 18px 44px 20px;
+        font-size: 52px;
+        line-height: 1.24;
+        font-weight: 700;
+        text-align: center;
+        opacity: 0;
+      }
+
+      /* ---- key-term labels: highlighted term with meaning beneath ---- */
+      .term {
+        position: absolute;
+        top: 32px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: max-content;
+        max-width: 1000px;
+        opacity: 0;
+      }
+      .term.right {
+        left: auto;
+        right: 50px;
+        margin: 0;
+        max-width: 980px;
+      }
+      .term.high {
+        top: 22px;
+      }
+      .term .name {
+        display: inline-block;
+        background: var(--amber-light);
+        color: #3b2600;
+        font-size: 58px;
+        line-height: 1.15;
+        font-weight: 700;
+        padding: 6px 28px 8px;
+        border-radius: 20px 20px 0 0;
+      }
+      .term .mean {
+        background: #ffffff;
+        color: #12303f;
+        font-size: 44px;
+        line-height: 1.2;
+        padding: 12px 28px 14px;
+        border: 5px solid var(--amber-light);
+        border-radius: 0 20px 20px 20px;
+      }
+
+      /* ---- small on-screen labels (all 44px or bigger) ---- */
+      .tag {
+        position: absolute;
+        background: #ffffff;
+        color: var(--ink);
+        font-size: 46px;
+        line-height: 1.1;
+        font-weight: 700;
+        padding: 8px 24px 10px;
+        border-radius: 18px;
+        border: 4px solid var(--green-dark);
+        opacity: 0;
+        white-space: nowrap;
+      }
+      .tag.soft {
+        border-color: #b9c9b0;
+      }
+      .center-x {
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: max-content;
+      }
+
+      /* ---- scene 1 title ---- */
+      #title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 250px;
+        margin: 0 auto;
+        width: max-content;
+        background: rgba(255, 255, 255, 0.94);
+        border: 6px solid var(--green-dark);
+        border-radius: 40px;
+        padding: 30px 60px 36px;
+        font-size: 88px;
+        line-height: 1.1;
+        font-weight: 700;
+        color: var(--green-dark);
+        opacity: 0;
+      }
+
+      /* ---- scene 4 hud ---- */
+      #gen {
+        position: absolute;
+        left: 60px;
+        top: 30px;
+        width: 700px;
+        height: 84px;
+      }
+      #gen .g {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 68px;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--green-dark);
+        opacity: 0;
+      }
+      #avglabel {
+        position: absolute;
+        left: 60px;
+        top: 118px;
+        font-size: 44px;
+        line-height: 1.1;
+        font-weight: 700;
+        color: var(--ink);
+        opacity: 0;
+      }
+      .legend {
+        position: absolute;
+        top: 726px;
+        font-size: 44px;
+        line-height: 1.15;
+        color: #24473a;
+        font-weight: 700;
+        opacity: 0;
+        white-space: nowrap;
+      }
+      .legend i {
+        display: inline-block;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--amber);
+        border: 3px solid #b36b00;
+        vertical-align: -4px;
+        margin-right: 10px;
+      }
+      .legend b {
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #d5e9b8, #14532d);
+        vertical-align: -6px;
+        margin-right: 10px;
+      }
+
+      /* ---- scene 6 cards ---- */
+      .cards {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 228px;
+        display: flex;
+        gap: 36px;
+      }
+      .card {
+        flex: 1 1 0;
+        background: #ffffff;
+        border: 5px solid #cfe0c8;
+        border-radius: 30px;
+        padding: 14px 16px 18px;
+        opacity: 0;
+      }
+      .card svg {
+        display: block;
+        width: 100%;
+        height: 290px;
+      }
+      .card .nm {
+        font-size: 50px;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--ink);
+        margin-top: 4px;
+      }
+      .card .ds {
+        font-size: 44px;
+        line-height: 1.15;
+        color: #24473a;
+        margin-top: 4px;
+      }
+      .card .ord {
+        margin-top: 12px;
+        font-size: 44px;
+        line-height: 1.15;
+        color: var(--ink);
+      }
+      .card .ord span {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 2px 14px 4px;
+        border-radius: 14px;
+        font-weight: 700;
+      }
+      .o-car {
+        background: #b8e6c1;
+        border: 3px solid var(--green-dark);
+      }
+      .o-eri {
+        background: #ffe2a6;
+        border: 3px solid #b36b00;
+      }
+      .o-oxa {
+        background: #cfe6f7;
+        border: 3px solid #2a6fb0;
+      }
+
+      /* ---- scene 7 ---- */
+      #q {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 250px;
+        margin: 0 auto;
+        width: 1360px;
+        background: #ffffff;
+        border: 8px solid var(--green-dark);
+        border-radius: 48px;
+        padding: 46px 60px 54px;
+        text-align: center;
+        font-size: 92px;
+        line-height: 1.15;
+        font-weight: 700;
+        color: var(--ink);
+        opacity: 0;
+      }
+      #qmark {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 60px;
+        margin: 0 auto;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: var(--amber-light);
+        border: 8px solid #b36b00;
+        color: #3b2600;
+        font-size: 110px;
+        font-weight: 700;
+        line-height: 130px;
+        text-align: center;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-dy4d" id="root" data-composition-id="main" data-start="0" data-duration="90" data-width="1920" data-height="1080">
+      <!-- ============ SCENE 1: poor soil (0-12s) ============ -->
+      <section data-hf-id="hf-m7ku" id="sc1" class="clip scene" data-start="0" data-duration="12.4" data-track-index="0">
+        <div data-hf-id="hf-m5zo" class="inner" id="in1">
+          <svg data-hf-id="hf-ktpo" class="art" id="art1" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-0rus" class="tag soft" id="lblRich" style="left: 265px; top: 800px; opacity: 1">Rich soil</div>
+          <div data-hf-id="hf-ldzm" class="tag soft" id="lblBog" style="left: 1255px; top: 800px; opacity: 1">Bog soil</div>
+          <div data-hf-id="hf-wcwp" id="title">How did carnivorous plants evolve?</div>
+          <div data-hf-id="hf-pxko" class="term" id="tNutrients">
+            <div data-hf-id="hf-haof" class="name">nutrients</div>
+            <div data-hf-id="hf-z55i" class="mean">Chemicals plants need to grow</div>
+          </div>
+          <div data-hf-id="hf-gsc6" class="caption"><div data-hf-id="hf-orj5" id="c1a">Bog soils are short on nitrogen and phosphorus</div></div>
+          <div data-hf-id="hf-0o2i" class="caption"><div data-hf-id="hf-6bfm" id="c1b">Plants need these nutrients to grow</div></div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 2: a defence turns into a trap (12-26s) ============ -->
+      <section data-hf-id="hf-ljc3" id="sc2" class="clip scene" data-start="11.6" data-duration="14.8" data-track-index="0">
+        <div data-hf-id="hf-utvj" class="inner" id="in2">
+          <svg data-hf-id="hf-a5x3" class="art" id="art2" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-m85o" class="tag" id="lblHairs" style="left: 60px; top: 372px">Sticky hairs</div>
+          <div data-hf-id="hf-rtmf" class="term" id="tAdaptation">
+            <div data-hf-id="hf-jq8o" class="name">adaptation</div>
+            <div data-hf-id="hf-j30l" class="mean">A feature that helps a living thing survive</div>
+          </div>
+          <div data-hf-id="hf-12dj" class="caption"><div data-hf-id="hf-6xe2" id="c2a">Sticky hairs first evolved to defend the leaf from grazers</div></div>
+          <div data-hf-id="hf-5ino" class="caption"><div data-hf-id="hf-fwfb" id="c2b">Trapped insects rotted and leaked nutrients in by accident</div></div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 3: digestive enzymes (26-34s) ============ -->
+      <section data-hf-id="hf-hemc" id="sc3" class="clip scene" data-start="25.6" data-duration="8.8" data-track-index="0">
+        <div data-hf-id="hf-qvri" class="inner" id="in3">
+          <div data-hf-id="hf-ymuq" class="inner" id="zoom3">
+            <svg data-hf-id="hf-0s1i" class="art" id="art3" viewBox="0 0 1920 1080" />
+          </div>
+          <div data-hf-id="hf-bx9z" class="term" id="tEnzymes">
+            <div data-hf-id="hf-ci7g" class="name">digestive enzymes</div>
+            <div data-hf-id="hf-kbet" class="mean">Proteins that break food into small pieces</div>
+          </div>
+          <div data-hf-id="hf-5wyp" class="caption"><div data-hf-id="hf-srx2" id="c3a">Some plants already made proteins for defence</div></div>
+          <div data-hf-id="hf-6b9q" class="caption">
+            <div data-hf-id="hf-xg8z" id="c3b">Some of these proteins could also break down insects. These are digestive enzymes</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 4: natural selection (34-54s) ============ -->
+      <section data-hf-id="hf-9sl4" id="sc4" class="clip scene" data-start="33.6" data-duration="20.8" data-track-index="0">
+        <div data-hf-id="hf-zjnd" class="inner" id="in4">
+          <svg data-hf-id="hf-weux" class="art" id="art4" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-0y8p" id="gen"></div>
+          <div data-hf-id="hf-blzx" id="avglabel">Average leaf darkness</div>
+          <div data-hf-id="hf-kphc" class="legend" id="lgLeaf" style="left: 60px"><b data-hf-id="hf-xujp"></b>Darker leaf = uses insects better</div>
+          <div data-hf-id="hf-nlv3" class="legend" id="lgSeed" style="left: 1240px"><i data-hf-id="hf-wt6k"></i>Amber dot = one seed</div>
+          <div data-hf-id="hf-acth" class="term right" id="tVariation">
+            <div data-hf-id="hf-295u" class="name">variation</div>
+            <div data-hf-id="hf-xc6y" class="mean">Small differences between individuals</div>
+          </div>
+          <div data-hf-id="hf-b276" class="term right" id="tInheritance">
+            <div data-hf-id="hf-2nhj" class="name">inheritance</div>
+            <div data-hf-id="hf-hnk8" class="mean">Traits passed from parents to offspring</div>
+          </div>
+          <div data-hf-id="hf-a434" class="term right" id="tSelection">
+            <div data-hf-id="hf-cq0o" class="name">natural selection</div>
+            <div data-hf-id="hf-6wds" class="mean">Helpful traits become more common over time</div>
+          </div>
+          <div data-hf-id="hf-6pkr" class="caption"><div data-hf-id="hf-jqua" id="c4a">Plants vary a little</div></div>
+          <div data-hf-id="hf-73vs" class="caption"><div data-hf-id="hf-oali" id="c4b">Offspring resemble their parents</div></div>
+          <div data-hf-id="hf-7i6t" class="caption">
+            <div data-hf-id="hf-ao67" id="c4c">Better users make more seeds, so the population shifts over many generations</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 5: leaves reshape (54-68s) ============ -->
+      <section data-hf-id="hf-1i1u" id="sc5" class="clip scene" data-start="53.6" data-duration="14.8" data-track-index="0">
+        <div data-hf-id="hf-yrzk" class="inner" id="in5">
+          <svg data-hf-id="hf-37hs" class="art" id="art5" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-xwip" class="tag center-x" id="st0" style="top: 60px">Flat leaf</div>
+          <div data-hf-id="hf-z0vs" class="tag center-x" id="st1" style="top: 60px">Curled edges</div>
+          <div data-hf-id="hf-ilam" class="tag center-x" id="st2" style="top: 60px">Cup with fluid</div>
+          <div data-hf-id="hf-566e" class="tag center-x" id="st3" style="top: 60px">Pitcher with a lid</div>
+          <div data-hf-id="hf-7whu" class="caption"><div data-hf-id="hf-nol7" id="c5a">Small changes that held prey for longer were kept</div></div>
+          <div data-hf-id="hf-mgke" class="caption"><div data-hf-id="hf-fke4" id="c5b">Nobody planned it. Natural selection kept what worked</div></div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 6: convergent evolution (68-82s) ============ -->
+      <section data-hf-id="hf-6kl4" id="sc6" class="clip scene" data-start="67.6" data-duration="14.8" data-track-index="0">
+        <div data-hf-id="hf-9nh7" class="inner" id="in6">
+          <svg data-hf-id="hf-nuu3" class="art" id="art6" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-fdo1" class="term high" id="tConvergent">
+            <div data-hf-id="hf-15ff" class="name">convergent evolution</div>
+            <div data-hf-id="hf-muz6" class="mean">Unrelated plants evolve similar traits</div>
+          </div>
+          <div data-hf-id="hf-5cwd" class="cards">
+            <div data-hf-id="hf-8fpj" class="card" id="card1">
+              <svg data-hf-id="hf-u35r" viewBox="0 0 300 250">
+                <path data-hf-id="hf-97mx" d="M150 0 C150 22 196 20 200 46" fill="none" stroke="#2e9b57" stroke-width="7" stroke-linecap="round" />
+                <path data-hf-id="hf-58oe" d="M160 38 C170 14 226 20 236 44 C214 58 180 58 160 38Z" fill="#2e9b57" stroke="#1f7a45" stroke-width="4" />
+                <path data-hf-id="hf-tbu2" d="M110 80 C98 150 78 192 128 234 Q150 246 172 234 C222 192 202 150 190 80Z" fill="#8fd19e" stroke="#1f7a45" stroke-width="5" />
+                <path data-hf-id="hf-ewab" d="M104 190 C112 216 130 232 150 236 C170 232 188 216 196 190 C170 200 130 200 104 190Z" fill="#7fc1e8" />
+                <circle data-hf-id="hf-a94u" cx="128" cy="130" r="7" fill="#f2a93b" />
+                <circle data-hf-id="hf-ekdp" cx="168" cy="152" r="8" fill="#f2a93b" />
+                <circle data-hf-id="hf-h7mj" cx="140" cy="176" r="6" fill="#f2a93b" />
+                <ellipse data-hf-id="hf-ewg8" cx="150" cy="80" rx="44" ry="14" fill="#f2a93b" stroke="#b36b00" stroke-width="4" />
+                <ellipse data-hf-id="hf-7pj9" cx="150" cy="80" rx="31" ry="8" fill="#6b3f0a" />
+              </svg>
+              <div data-hf-id="hf-2fj9" class="nm">Nepenthes</div>
+              <div data-hf-id="hf-9fof" class="ds">Tropical Asia</div>
+              <div data-hf-id="hf-hrjn" class="ord">Order: <span data-hf-id="hf-o8p1" class="o-car">Caryophyllales</span></div>
+            </div>
+            <div data-hf-id="hf-zrto" class="card" id="card2">
+              <svg data-hf-id="hf-sewv" viewBox="0 0 300 250">
+                <path data-hf-id="hf-n4zm" d="M98 64 C92 0 208 0 202 64 Q150 42 98 64Z" fill="#2e9b57" stroke="#1f7a45" stroke-width="5" />
+                <path data-hf-id="hf-ju5q" d="M132 250 L120 98 Q118 74 102 60 L198 60 Q182 74 180 98 L168 250Z" fill="#a6d8a0" stroke="#1f7a45" stroke-width="5" />
+                <path data-hf-id="hf-p2wu" d="M140 240 L134 96 M160 240 L166 96 M150 240 L150 96" fill="none" stroke="#f2a93b" stroke-width="6" stroke-linecap="round" />
+                <ellipse data-hf-id="hf-dpe3" cx="150" cy="60" rx="48" ry="11" fill="#f2a93b" stroke="#b36b00" stroke-width="4" />
+                <ellipse data-hf-id="hf-51em" cx="150" cy="60" rx="34" ry="6" fill="#6b3f0a" />
+              </svg>
+              <div data-hf-id="hf-yoki" class="nm">Sarracenia</div>
+              <div data-hf-id="hf-i9oa" class="ds">North America</div>
+              <div data-hf-id="hf-8d8z" class="ord">Order: <span data-hf-id="hf-68en" class="o-eri">Ericales</span></div>
+            </div>
+            <div data-hf-id="hf-0jhh" class="card" id="card3">
+              <svg data-hf-id="hf-s0lu" viewBox="0 0 300 250">
+                <path data-hf-id="hf-8g6m" d="M50 246 Q80 196 128 216" fill="none" stroke="#2e9b57" stroke-width="12" stroke-linecap="round" />
+                <path data-hf-id="hf-0zdd" d="M250 246 Q220 196 172 216" fill="none" stroke="#2e9b57" stroke-width="12" stroke-linecap="round" />
+                <path data-hf-id="hf-inav" d="M150 112 L150 132" stroke="#1f7a45" stroke-width="6" />
+                <ellipse data-hf-id="hf-z7n7" cx="150" cy="82" rx="58" ry="26" fill="#2e9b57" stroke="#1f7a45" stroke-width="5" />
+                <path data-hf-id="hf-6e98" d="M110 82 L190 82 M124 64 L176 100 M176 64 L124 100" stroke="#a6d8a0" stroke-width="3" fill="none" />
+                <path data-hf-id="hf-ddjp" d="M92 212 C80 162 100 132 150 132 C200 132 220 162 208 212 Q150 248 92 212Z" fill="#8fd19e" stroke="#1f7a45" stroke-width="5" />
+                <path data-hf-id="hf-x7gc" d="M124 150 Q118 190 128 226 M150 146 L150 236 M176 150 Q182 190 172 226" fill="none" stroke="#f2a93b" stroke-width="5" stroke-linecap="round" />
+                <ellipse data-hf-id="hf-dsmn" cx="150" cy="134" rx="62" ry="15" fill="#f2a93b" stroke="#b36b00" stroke-width="4" />
+                <ellipse data-hf-id="hf-8lwk" cx="150" cy="134" rx="46" ry="9" fill="#6b3f0a" />
+              </svg>
+              <div data-hf-id="hf-kwjl" class="nm">Cephalotus</div>
+              <div data-hf-id="hf-besl" class="ds">Western Australia</div>
+              <div data-hf-id="hf-7yxy" class="ord">Order: <span data-hf-id="hf-rt9v" class="o-oxa">Oxalidales</span></div>
+            </div>
+            <div data-hf-id="hf-h3le" class="card" id="card4">
+              <svg data-hf-id="hf-rmat" viewBox="0 0 300 250">
+                <path data-hf-id="hf-n2mp" d="M56 150 C24 190 56 222 104 250" fill="none" stroke="#2e9b57" stroke-width="16" stroke-linecap="round" />
+                <g data-hf-id="hf-x7v9" id="ftLow">
+                  <path data-hf-id="hf-so5v" d="M56 150 C100 214 220 214 262 150Z" fill="#8fd19e" stroke="#1f7a45" stroke-width="5" stroke-linejoin="round" />
+                  <path data-hf-id="hf-ep5k" d="M80 152 C120 192 200 192 238 152Z" fill="#f2a93b" />
+                  <path data-hf-id="hf-fp4y" d="M84 150 l8 -22 l8 22z M116 150 l8 -22 l8 22z M148 150 l8 -22 l8 22z M180 150 l8 -22 l8 22z M212 150 l8 -22 l8 22z" fill="#1f7a45" />
+                </g>
+                <g data-hf-id="hf-dm9t" id="ftBug">
+                  <ellipse data-hf-id="hf-bso1" cx="160" cy="134" rx="14" ry="9" fill="#2f3e4e" />
+                  <circle data-hf-id="hf-k9b9" cx="176" cy="130" r="7" fill="#1e2b38" />
+                  <ellipse data-hf-id="hf-pmz2" cx="156" cy="124" rx="12" ry="5" fill="#bfe0f5" />
+                </g>
+                <g data-hf-id="hf-bpie" id="ftUp">
+                  <path data-hf-id="hf-ln3f" d="M56 150 C100 86 220 86 262 150Z" fill="#6cc08a" stroke="#1f7a45" stroke-width="5" stroke-linejoin="round" />
+                  <path data-hf-id="hf-cppv" d="M100 150 l8 22 l8 -22z M132 150 l8 22 l8 -22z M164 150 l8 22 l8 -22z M196 150 l8 22 l8 -22z M228 150 l8 22 l8 -22z" fill="#1f7a45" />
+                </g>
+              </svg>
+              <div data-hf-id="hf-hxym" class="nm">Venus flytrap</div>
+              <div data-hf-id="hf-xjx6" class="ds">Snap trap</div>
+              <div data-hf-id="hf-7kmx" class="ord">Order: <span data-hf-id="hf-ssih" class="o-car">Caryophyllales</span></div>
+            </div>
+          </div>
+          <div data-hf-id="hf-m29d" class="caption"><div data-hf-id="hf-mfc4" id="c6a">Carnivory has evolved independently at least nine times</div></div>
+          <div data-hf-id="hf-n96g" class="caption">
+            <div data-hf-id="hf-0vu7" id="c6b">
+              Unrelated plants ended up with similar traps because they faced the same problem. This is
+              convergent evolution
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 7: discussion question (82-90s) ============ -->
+      <section data-hf-id="hf-or2u" id="sc7" class="clip scene" data-start="81.6" data-duration="8.4" data-track-index="0">
+        <div data-hf-id="hf-5pd6" class="inner" id="in7">
+          <svg data-hf-id="hf-aly2" class="art" id="art7" viewBox="0 0 1920 1080" />
+          <div data-hf-id="hf-u1kq" id="qmark">?</div>
+          <div data-hf-id="hf-ac36" id="q">Why might a plant in rich soil not need to become carnivorous?</div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      /* ------------------------------------------------------------------
+         Deterministic helpers. Every "random" number comes from this seeded
+         generator, so each frame is identical on every render.
+      ------------------------------------------------------------------ */
+      function mulberry32(a) {
+        return function () {
+          a |= 0;
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const R = mulberry32(20260929);
+      const rr = (a, b) => a + (b - a) * R();
+      const rad = (d) => (d * Math.PI) / 180;
+      const $ = (s) => document.querySelector(s);
+      const NS = "http://www.w3.org/2000/svg";
+      function el(tag, attrs, parent) {
+        const e = document.createElementNS(NS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        if (parent) parent.appendChild(e);
+        return e;
+      }
+      const AMBER = "#f2a93b";
+      function nutrient(parent, r) {
+        const g = el("g", {}, parent);
+        el("circle", { cx: 0, cy: 0, r: r || 10, fill: AMBER, stroke: "#ffd98a", "stroke-width": 3 }, g);
+        gsap.set(g, { transformOrigin: "50% 50%" });
+        return g;
+      }
+      function bokeh(svg, n, seedOffset) {
+        const cols = ["#dcefd2", "#fff0c9", "#d8ebf7"];
+        for (let i = 0; i < n; i++) {
+          el("circle", { cx: rr(0, 1920), cy: rr(0, 1080), r: rr(40, 150), fill: cols[i % 3], opacity: 0.5 }, svg);
+        }
+      }
+      function leafPath(x, y, ang, L, w) {
+        const c = Math.cos(rad(ang));
+        const s = Math.sin(rad(ang));
+        const P = (u, v) => `${(x + u * c - v * s).toFixed(1)} ${(y + u * s + v * c).toFixed(1)}`;
+        return `M${P(0, 0)} C${P(L * 0.25, -w)} ${P(L * 0.75, -w * 0.9)} ${P(L, 0)} C${P(L * 0.75, w * 0.9)} ${P(L * 0.25, w)} ${P(0, 0)}Z`;
+      }
+      /* hand-built flat plant, drawn in absolute coordinates */
+      function plant(parent, o) {
+        const g = el("g", {}, parent);
+        const lean = o.lean || 0;
+        el("path", {
+          d: `M${o.x} ${o.y} Q${o.x + lean} ${o.y - o.h * 0.5} ${o.x + lean * 1.6} ${o.y - o.h}`,
+          fill: "none", stroke: o.stem, "stroke-width": o.sw, "stroke-linecap": "round",
+        }, g);
+        const leaves = [];
+        for (let i = 0; i < o.n; i++) {
+          const t = o.n === 1 ? 1 : 0.28 + (0.72 * i) / (o.n - 1);
+          const px = o.x + lean * (2 * t * (1 - t) + 1.6 * t * t);
+          const py = o.y - o.h * t;
+          const top = i === o.n - 1;
+          const side = i % 2 ? 1 : -1;
+          const ang = top ? -90 : side > 0 ? -32 : 212;
+          const size = o.L * (top ? 0.8 : 1 - 0.35 * t);
+          const p = el("path", {
+            d: leafPath(px, py, ang, size, size * 0.34),
+            fill: i % 2 ? o.leaf2 || o.leaf : o.leaf, stroke: o.edge || "none", "stroke-width": 2, class: "leaf",
+          }, g);
+          leaves.push(p);
+        }
+        return { g, leaves };
+      }
+      function bug(parent) {
+        const g = el("g", {}, parent);
+        el("circle", { cx: 0, cy: 0, r: 80, fill: "none" }, g); // keeps the bounding box centred on (0,0)
+        [-14, 2, 18].forEach((y, i) => {
+          [-1, 1].forEach((s) => {
+            el("path", { d: `M${s * 14} ${y} L${s * 40} ${y + (i - 1) * 14 + 4}`, stroke: "#1e2b38", "stroke-width": 4, "stroke-linecap": "round" }, g);
+          });
+        });
+        el("path", { d: "M-6 -50 L-16 -72 M6 -50 L16 -72", stroke: "#1e2b38", "stroke-width": 3, "stroke-linecap": "round" }, g);
+        const wl = el("path", { d: leafPath(-10, -10, 195, 66, 17), fill: "#bfe0f5", opacity: 0.85 }, g);
+        const wr = el("path", { d: leafPath(10, -10, -15, 66, 17), fill: "#bfe0f5", opacity: 0.85 }, g);
+        el("ellipse", { cx: 0, cy: 0, rx: 21, ry: 34, fill: "#2f3e4e" }, g);
+        el("path", { d: "M-19 -6 Q0 2 19 -6 M-20 10 Q0 18 20 10", stroke: AMBER, "stroke-width": 5, fill: "none", "stroke-linecap": "round" }, g);
+        el("circle", { cx: 0, cy: -42, r: 15, fill: "#1e2b38" }, g);
+        el("circle", { cx: -6, cy: -45, r: 4.5, fill: "#fff" }, g);
+        el("circle", { cx: 6, cy: -45, r: 4.5, fill: "#fff" }, g);
+        gsap.set(g, { transformOrigin: "50% 50%" });
+        return { g, wl, wr };
+      }
+      /* pac-man style enzyme icon: mouth angle m (radians), drawn around (0,0) facing +x */
+      function enzymeD(r, m) {
+        const x = r * Math.cos(m);
+        const y = r * Math.sin(m);
+        return `M0 0 L${x.toFixed(2)} ${(-y).toFixed(2)} A${r} ${r} 0 1 0 ${x.toFixed(2)} ${y.toFixed(2)}Z`;
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      /* show(): fade a caption / term / label in, then out ---------------- */
+      function show(sel, t0, t1, rise) {
+        tl.fromTo(sel, { opacity: 0, y: rise === undefined ? 18 : rise }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, t0);
+        tl.to(sel, { opacity: 0, duration: 0.35, ease: "power1.in" }, t1 - 0.35);
+      }
+      /* scene cross-fades: each incoming scene fades in over the outgoing one */
+      const SCENE_STARTS = [0, 12, 26, 34, 54, 68, 82];
+      for (let i = 1; i < 7; i++) {
+        tl.fromTo("#in" + (i + 1), { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.inOut" }, SCENE_STARTS[i] - 0.4);
+      }
+
+      /* =================================================================
+         SCENE 1  -  poor soil (0-12s)
+      ================================================================= */
+      (function () {
+        const s = $("#art1");
+        el("rect", { x: 0, y: 0, width: 1920, height: 640, fill: "#eef6f9" }, s);
+        bokeh(s, 5);
+        // soils
+        el("rect", { x: 0, y: 640, width: 950, height: 236, fill: "#5f3f27" }, s);
+        el("rect", { x: 970, y: 640, width: 950, height: 236, fill: "#a99b78" }, s);
+        for (let i = 0; i < 70; i++) el("circle", { cx: rr(10, 940), cy: rr(660, 866), r: rr(3, 9), fill: i % 2 ? "#7a5233" : "#472e1b" }, s);
+        for (let i = 0; i < 6; i++) el("ellipse", { cx: rr(1020, 1880), cy: rr(700, 850), rx: rr(50, 110), ry: rr(12, 22), fill: "#8ec3e6", opacity: 0.55 }, s);
+        for (let i = 0; i < 60; i++) el("circle", { cx: rr(985, 1910), cy: rr(665, 866), r: rr(3, 8), fill: i % 2 ? "#7b6e50" : "#c6b995" }, s);
+        el("rect", { x: 970, y: 640, width: 950, height: 24, fill: "#a9d3ee", opacity: 0.85 }, s);
+        el("rect", { x: 950, y: 600, width: 20, height: 276, fill: "#f3f8ec" }, s);
+
+        // roots
+        function roots(cx, n, minL, maxL, spread, stroke, w) {
+          const tips = [];
+          for (let i = 0; i < n; i++) {
+            const a = rad(-spread + (2 * spread * i) / (n - 1) + rr(-5, 5));
+            const L = rr(minL, maxL);
+            const tx = cx + Math.sin(a) * L;
+            const ty = 640 + Math.cos(a) * L;
+            const mx = cx + Math.sin(a) * L * 0.45 + rr(-14, 14);
+            const my = 640 + Math.cos(a) * L * 0.55;
+            el("path", { d: `M${cx} 640 Q${mx.toFixed(1)} ${my.toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)}`, fill: "none", stroke, "stroke-width": w, "stroke-linecap": "round" }, s);
+            tips.push([tx, ty]);
+          }
+          return tips;
+        }
+        const tipsL = roots(475, 9, 110, 160, 72, "#e6cb9c", 7);
+        const tipsR = roots(1445, 3, 34, 52, 40, "#d9cfae", 4);
+
+        // nutrient dots (amber). Many on the left, only a few on the right.
+        function cycleDots(count, x0, x1, tips, t0, gap, cyc, dur) {
+          for (let d = 0; d < count; d++) {
+            const g = nutrient(s, 10);
+            gsap.set(g, { opacity: 0 });
+            let t = t0 + d * gap;
+            for (let c = 0; c < cyc; c++) {
+              if (t + dur + 0.4 > 11.7) break;
+              const sx = rr(x0, x1);
+              const sy = rr(672, 810);
+              const tip = tips[(d + c) % tips.length];
+              tl.fromTo(g, { x: sx, y: sy, opacity: 0, scale: 1 }, { opacity: 1, duration: 0.4, immediateRender: c === 0 }, t);
+              tl.to(g, { x: tip[0], y: tip[1], duration: dur, ease: "sine.inOut" }, t + 0.2);
+              tl.to(g, { opacity: 0, scale: 0.3, duration: 0.3 }, t + 0.2 + dur);
+              t += dur + 0.6;
+            }
+          }
+        }
+        cycleDots(24, 70, 880, tipsL, 0.6, 0.27, 3, 2.4);
+        cycleDots(4, 1020, 1880, tipsR, 1.4, 2.1, 2, 4.2);
+
+        // plants
+        const healthy = plant(s, { x: 475, y: 640, h: 330, n: 7, L: 150, sw: 14, stem: "#1f7a45", leaf: "#2e9b57", leaf2: "#3fb069", lean: 8 });
+        const poor = plant(s, { x: 1445, y: 640, h: 92, n: 3, L: 46, sw: 6, stem: "#a9b872", leaf: "#d3dd94", leaf2: "#c5d17d", lean: 12 });
+        tl.fromTo(healthy.g, { scale: 0.32, svgOrigin: "475 640" }, { scale: 1, svgOrigin: "475 640", duration: 10.5, ease: "power1.inOut" }, 0.4);
+        tl.fromTo(poor.g, { scale: 0.85, svgOrigin: "1445 640" }, { scale: 1, svgOrigin: "1445 640", duration: 10.5, ease: "power1.inOut" }, 0.4);
+
+        // title, terms and captions
+        show("#title", 0.4, 3.6, 24);
+        tl.fromTo("#lblRich", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 3.6);
+        tl.fromTo("#lblBog", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 3.6);
+        show("#c1a", 3.9, 7.3);
+        show("#c1b", 7.5, 11.8);
+        show("#tNutrients", 7.7, 11.8);
+      })();
+
+      /* =================================================================
+         SCENE 2  -  a defence turns into a trap (12-26s)
+      ================================================================= */
+      (function () {
+        const s = $("#art2");
+        el("rect", { x: 0, y: 0, width: 1920, height: 1080, fill: "#f3f8ec" }, s);
+        bokeh(s, 7);
+        const leaf = el("path", {
+          d: "M330 590 C420 380 700 340 960 358 C1240 340 1500 400 1610 590 C1500 780 1200 830 960 830 C700 830 420 790 330 590Z",
+          fill: "#4fb06b", stroke: "#2e8b57", "stroke-width": 8,
+        }, s);
+        el("path", { d: "M350 590 C700 560 1200 560 1590 590", fill: "none", stroke: "#3a9a5a", "stroke-width": 10, "stroke-linecap": "round" }, s);
+        for (let i = 0; i < 6; i++) {
+          const x = 560 + i * 160;
+          el("path", { d: `M${x} 585 Q${x + 40} 650 ${x + 90} 745 M${x} 575 Q${x + 30} 500 ${x + 70} 430`, fill: "none", stroke: "#3a9a5a", "stroke-width": 5, "stroke-linecap": "round", opacity: 0.7 }, s);
+        }
+        const BUG = [960, 578];
+        const hairs = [];
+        for (let x = 470; x <= 1470; x += 92) {
+          for (let y = 470; y <= 700; y += 58) {
+            const bx = x + rr(-18, 18);
+            const by = y + rr(-12, 12) + (Math.round((x - 470) / 92) % 2) * 14;
+            const dx = (bx - 970) / 560;
+            const dy = (by - 590) / 170;
+            if (dx * dx + dy * dy > 0.9) continue;
+            const len = rr(58, 82);
+            const ang = rad(-90 + dx * 22 + rr(-8, 8));
+            const tx = bx + Math.cos(ang) * len;
+            const ty = by + Math.sin(ang) * len;
+            const g = el("g", {}, s);
+            el("path", { d: `M${bx.toFixed(1)} ${by.toFixed(1)} L${tx.toFixed(1)} ${ty.toFixed(1)}`, stroke: "#d98a1f", "stroke-width": 5, "stroke-linecap": "round" }, g);
+            el("circle", { cx: tx.toFixed(1), cy: ty.toFixed(1), r: 14, fill: "#d3ecfb", stroke: "#8cc7ee", "stroke-width": 3 }, g);
+            const hl = el("circle", { cx: (tx - 4).toFixed(1), cy: (ty - 5).toFixed(1), r: 4.5, fill: "#ffffff" }, g);
+            hairs.push({ g, hl, bx, by, tx, ty });
+          }
+        }
+        // shimmer on the drops (finite repeats)
+        hairs.forEach((h, i) => {
+          tl.fromTo(h.hl, { opacity: 0.25 }, { opacity: 1, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: 15, immediateRender: false }, 12.4 + rr(0, 1.4));
+        });
+        // hairs fade in as the scene starts
+        tl.fromTo(hairs.map((h) => h.g), { opacity: 0 }, { opacity: 1, duration: 0.6, stagger: 0.02 }, 12.5);
+        // label arrow
+        const near = hairs.reduce((a, b) => (Math.hypot(a.tx - 520, a.ty - 520) < Math.hypot(b.tx - 520, b.ty - 520) ? a : b));
+        const arrow = el("path", { d: `M330 424 L${(near.tx - 20).toFixed(0)} ${(near.ty - 6).toFixed(0)}`, stroke: "#10281f", "stroke-width": 5, "stroke-linecap": "round", fill: "none" }, s);
+        const arrowHead = el("circle", { cx: near.tx - 20, cy: near.ty - 6, r: 8, fill: "#10281f" }, s);
+        gsap.set([arrow, arrowHead], { opacity: 0 });
+        tl.fromTo([arrow, arrowHead], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 13.3);
+        tl.to([arrow, arrowHead], { opacity: 0, duration: 0.4 }, 17.4);
+        show("#lblHairs", 13.1, 17.8, 0);
+
+        // insect flies in, lands and gets stuck
+        const b = bug(s);
+        gsap.set(b.g, { x: 2100, y: 60, rotation: -110, scale: 1.7 });
+        tl.fromTo(b.g, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 14.1);
+        tl.to(b.g, { keyframes: { x: [2100, 1640, 1240, BUG[0]], y: [60, 150, 420, BUG[1]], rotation: [-110, -118, -60, -14] }, duration: 1.7, ease: "sine.inOut" }, 14.1);
+        tl.fromTo([b.wl, b.wr], { scaleY: 1 }, { scaleY: 0.35, duration: 0.09, yoyo: true, repeat: 15, ease: "none", transformOrigin: "50% 50%", immediateRender: false }, 14.1);
+        tl.to([b.wl, b.wr], { opacity: 0.3, duration: 0.6 }, 15.9);
+        // struggling
+        for (let k = 0; k < 5; k++) {
+          const amp = 14 - k * 2.4;
+          tl.to(b.g, { rotation: -14 + amp, x: BUG[0] + 5, duration: 0.22, ease: "sine.inOut" }, 16.1 + k * 0.5);
+          tl.to(b.g, { rotation: -14 - amp, x: BUG[0] - 5, duration: 0.28, ease: "sine.inOut" }, 16.33 + k * 0.5);
+        }
+        tl.to(b.g, { rotation: -14, x: BUG[0], duration: 0.3, ease: "sine.out" }, 18.75);
+        // hairs bend in towards the stuck insect
+        hairs.forEach((h) => {
+          const d = Math.hypot(h.bx - BUG[0], h.by - BUG[1]);
+          if (d < 300) {
+            const dir = h.bx < BUG[0] ? 1 : -1;
+            tl.to(h.g, { rotation: dir * 26 * (1 - d / 340), svgOrigin: `${h.bx.toFixed(1)} ${h.by.toFixed(1)}`, duration: 1.4, ease: "sine.inOut" }, 16.0);
+          }
+        });
+        // the insect rots and nutrients seep into the leaf
+        tl.to(b.g, { opacity: 0.55, duration: 2.5 }, 19.4);
+        for (let i = 0; i < 16; i++) {
+          const g = nutrient(s, 10);
+          const sx = BUG[0] + rr(-30, 30);
+          const sy = BUG[1] + rr(-20, 30);
+          const tx = sx + rr(-110, 110);
+          const ty = rr(650, 750);
+          const t = 19.7 + i * 0.3;
+          tl.fromTo(g, { x: sx, y: sy, opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4 }, t);
+          tl.to(g, { x: tx, y: ty, duration: 1.5, ease: "sine.inOut" }, t + 0.2);
+          tl.to(g, { opacity: 0, scale: 0.3, duration: 0.4 }, t + 1.5);
+        }
+        tl.to(leaf, { fill: "#3ea25f", duration: 3, ease: "sine.inOut" }, 20.5);
+
+        show("#c2a", 12.9, 19.1);
+        show("#tAdaptation", 13.0, 19.1);
+        show("#c2b", 19.5, 25.8);
+      })();
+
+      /* =================================================================
+         SCENE 3  -  digestive enzymes (26-34s)
+      ================================================================= */
+      (function () {
+        const s = $("#art3");
+        const SURF = 560;
+        el("rect", { x: -1200, y: -1200, width: 4320, height: 3480, fill: "#e4f2f6" }, s);
+        bokeh(s, 5);
+        const surfD = `M-1200 ${SURF} L0 ${SURF} Q240 ${SURF - 14} 480 ${SURF} T960 ${SURF} T1440 ${SURF} T1920 ${SURF} L3120 ${SURF} L3120 2280 L-1200 2280Z`;
+        const defs = el("defs", {}, s);
+        const cp = el("clipPath", { id: "leafClip" }, defs);
+        el("path", { d: surfD }, cp);
+        el("path", { d: surfD, fill: "#4fb06b" }, s);
+        const cells = el("g", { "clip-path": "url(#leafClip)" }, s);
+        const cellPos = [];
+        for (let row = 0; row < 11; row++) {
+          for (let col = -10; col < 25; col++) {
+            const cx = col * 130 + (row % 2) * 65 + 40;
+            const cy = SURF + 70 + row * 112;
+            el("circle", { cx, cy, r: 55, fill: "#7ccb90", stroke: "#a8e0b4", "stroke-width": 5 }, cells);
+            el("circle", { cx: cx - 14, cy: cy + 8, r: 8, fill: "#2e8b57" }, cells);
+            el("circle", { cx: cx + 16, cy: cy - 12, r: 8, fill: "#2e8b57" }, cells);
+            if (row < 2 && cx > 300 && cx < 1650) cellPos.push([cx, cy]);
+          }
+        }
+        el("path", { d: `M-1200 ${SURF} L0 ${SURF} Q240 ${SURF - 14} 480 ${SURF} T960 ${SURF} T1440 ${SURF} T1920 ${SURF} L3120 ${SURF}`, fill: "none", stroke: "#2e8b57", "stroke-width": 12 }, s);
+
+        // sticky hairs and gel
+        [[660, 0.9], [1260, -0.9]].forEach(([x, dir]) => {
+          el("path", { d: `M${x} ${SURF} C${x - dir * 30} ${SURF - 120} ${x + dir * 40} ${SURF - 200} ${x + dir * 10} ${SURF - 260}`, stroke: "#d98a1f", "stroke-width": 9, fill: "none", "stroke-linecap": "round" }, s);
+          el("circle", { cx: x + dir * 10, cy: SURF - 268, r: 24, fill: "#d3ecfb", stroke: "#8cc7ee", "stroke-width": 4 }, s);
+          el("circle", { cx: x + dir * 10 - 7, cy: SURF - 276, r: 7, fill: "#fff" }, s);
+        });
+        el("ellipse", { cx: 960, cy: SURF + 6, rx: 190, ry: 34, fill: "#d3ecfb", opacity: 0.92 }, s);
+
+        // stuck insect (big)
+        const INS = [960, 500];
+        const b = bug(s);
+        gsap.set(b.g, { x: INS[0], y: INS[1], scale: 2.1, rotation: 12 });
+        gsap.set([b.wl, b.wr], { opacity: 0.35 });
+
+        // protein icons living in the leaf cells (become enzymes)
+        const picks = [0, 2, 4, 6, 8, 10, 12].map((i) => cellPos[(i * 3) % cellPos.length]);
+        const enz = picks.map((p, i) => {
+          const g = el("g", {}, s);
+          el("circle", { cx: 0, cy: 0, r: 26, fill: "none" }, g);
+          const body = el("path", { d: enzymeD(26, 0.05), fill: "#3b8fd9", stroke: "#1f5f9f", "stroke-width": 4, "stroke-linejoin": "round" }, g);
+          el("circle", { cx: 4, cy: -12, r: 4.5, fill: "#fff" }, g);
+          gsap.set(g, { x: p[0], y: p[1], scale: 0, opacity: 1, transformOrigin: "50% 50%" });
+          return { g, body, p };
+        });
+        tl.fromTo(enz.map((e) => e.g), { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(1.6)", stagger: 0.16 }, 26.9);
+        // gentle bob while they are "defence proteins"
+        enz.forEach((e, i) => tl.to(e.g, { y: e.p[1] - 10, duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, 27.8 + i * 0.1));
+
+        // move up to the insect, turn to face it
+        const ANG = [196, 222, 248, 274, 300, 326, 352];
+        enz.forEach((e, i) => {
+          const a = rad(ANG[i]);
+          const tx = INS[0] + Math.cos(a) * 215;
+          const ty = INS[1] + 30 + Math.sin(a) * 175;
+          const face = (Math.atan2(INS[1] - ty, INS[0] - tx) * 180) / Math.PI;
+          tl.to(e.g, { x: tx, y: ty, rotation: face, duration: 1.1, ease: "power2.inOut" }, 29.3 + i * 0.05);
+        });
+        // chomping: one shared mouth angle, applied to every enzyme (seek-safe)
+        const mouth = { m: 0.05 };
+        tl.to(mouth, {
+          m: 0.72, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 9,
+          onUpdate: () => enz.forEach((e) => e.body.setAttribute("d", enzymeD(26, mouth.m))),
+        }, 30.4);
+
+        // insect broken down; nutrients absorbed by the leaf
+        tl.to(b.g, { scale: 0.45, opacity: 0.25, duration: 2.6, ease: "sine.inOut" }, 30.7);
+        for (let i = 0; i < 20; i++) {
+          const g = nutrient(s, 11);
+          const sx = INS[0] + rr(-70, 70);
+          const sy = INS[1] + rr(-20, 40);
+          const tx = rr(780, 1140);
+          const ty = rr(680, 940);
+          const t = 30.8 + i * 0.12;
+          tl.fromTo(g, { x: sx, y: sy, opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3 }, t);
+          tl.to(g, { x: tx, y: ty, duration: 1.1, ease: "sine.inOut" }, t + 0.15);
+          tl.to(g, { opacity: 0, scale: 0.3, duration: 0.35 }, t + 1.15);
+        }
+        // enzymes tidy away once the job is done
+        tl.to(enz.map((e) => e.g), { opacity: 0, scale: 0.6, duration: 0.5, stagger: 0.04 }, 33.0);
+
+        // zoom in
+        tl.fromTo("#zoom3", { scale: 0.8, transformOrigin: "50% 60%" }, { scale: 1, transformOrigin: "50% 60%", duration: 3.2, ease: "power2.out" }, 25.6);
+
+        show("#c3a", 26.7, 29.4);
+        show("#c3b", 29.6, 33.9);
+        show("#tEnzymes", 29.7, 33.9);
+      })();
+
+      /* =================================================================
+         SCENE 4  -  natural selection (34-54s)
+      ================================================================= */
+      (function () {
+        const s = $("#art4");
+        el("rect", { x: 0, y: 0, width: 1920, height: 1080, fill: "#f3f8ec" }, s);
+        bokeh(s, 5);
+
+        // deterministic selection simulation (seed chosen so the average climbs steadily)
+        function sim(seed) {
+          const r = mulberry32(seed);
+          let cur = [];
+          for (let i = 0; i < 12; i++) cur.push(0.08 + 0.3 * r());
+          const T = [];
+          for (let g = 0; g < 12; g++) {
+            T.push(cur.slice());
+            const w = cur.map((t) => 1 + Math.round(t * 6));
+            const tot = w.reduce((a, b) => a + b, 0);
+            const nx = [];
+            for (let i = 0; i < 12; i++) {
+              let x = r() * tot;
+              let p = 0;
+              while (x > w[p]) { x -= w[p]; p++; }
+              nx.push(Math.max(0.02, Math.min(1, cur[p] + (r() + r() - 1) * 0.14 + 0.02)));
+            }
+            cur = nx;
+          }
+          return T;
+        }
+        const T = sim(8);
+        const seedsOf = (t) => 1 + Math.round(t * 6);
+        const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+        const colAt = (t) => {
+          const a = [213, 233, 184];
+          const b = [20, 83, 45];
+          return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * t)).join(",")})`;
+        };
+
+        // ground strip
+        el("rect", { x: 40, y: 640, width: 1840, height: 44, rx: 22, fill: "#8b5e3c" }, s);
+        const plants = [];
+        const dots = [];
+        for (let i = 0; i < 12; i++) {
+          const cx = 135 + i * 150;
+          const p = plant(s, { x: cx, y: 646, h: 200, n: 5, L: 90, sw: 9, stem: "#3d7a4a", leaf: colAt(T[0][i]), edge: "#14532d", lean: rr(-8, 8) });
+          plants.push(p);
+          const ds = [];
+          for (let j = 0; j < 7; j++) {
+            const g = el("g", {}, s);
+            el("circle", { cx: cx + ((j % 3) - 1) * 30, cy: 410 - Math.floor(j / 3) * 30, r: 12, fill: AMBER, stroke: "#b36b00", "stroke-width": 3 }, g);
+            gsap.set(g, { opacity: 0 });
+            ds.push(g);
+          }
+          dots.push(ds);
+        }
+        // average bar
+        const track = el("rect", { x: 60, y: 172, width: 700, height: 44, rx: 22, fill: "#dde8d5", stroke: "#b9c9b0", "stroke-width": 3 }, s);
+        gsap.set(track, { opacity: 0 });
+        const bar = el("rect", { x: 60, y: 172, width: 10, height: 44, rx: 22, fill: "#1f7a45" }, s);
+        gsap.set(bar, { opacity: 0 });
+        const trackShow = el("g", {}, s); // placeholder to keep z-order tidy
+        gsap.set(bar, { attr: { width: 6 + 694 * mean(T[0]) } });
+
+        // generation counter labels
+        const gen = $("#gen");
+        for (let g = 0; g < 12; g++) {
+          const d = document.createElement("div");
+          d.className = "g";
+          d.id = "gen" + (g + 1);
+          d.textContent = "Generation " + (g + 1);
+          gen.appendChild(d);
+        }
+
+        // plants pop in (variation)
+        const allLeafPlants = plants.map((p) => p.g);
+        allLeafPlants.forEach((g, i) => {
+          const cx = 135 + i * 150;
+          tl.fromTo(g, { scale: 0, svgOrigin: `${cx} 646`, opacity: 0 }, { scale: 1, svgOrigin: `${cx} 646`, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 34.7 + i * 0.07);
+        });
+        tl.fromTo("#lgLeaf", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 36.4);
+        tl.fromTo("#lgSeed", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 41.0);
+        // highlight the differences: a gentle wobble across the row
+        allLeafPlants.forEach((g, i) => {
+          const cx = 135 + i * 150;
+          tl.to(g, { rotation: 2.5, svgOrigin: `${cx} 646`, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 3 }, 36.6 + i * 0.12);
+        });
+
+        // generations
+        const G0 = 41.3;
+        const GP = 0.95;
+        tl.fromTo("#avglabel", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 40.7);
+        tl.fromTo([bar, track], { opacity: 0 }, { opacity: 1, duration: 0.5 }, 40.7);
+        for (let g = 0; g < 12; g++) {
+          const t0 = G0 + g * GP;
+          tl.set("#gen" + (g + 1), { opacity: 1 }, t0);
+          if (g > 0) tl.set("#gen" + g, { opacity: 0 }, t0);
+          tl.to(bar, { attr: { width: 6 + 694 * mean(T[g]) }, duration: 0.5, ease: "sine.inOut" }, t0 + 0.1);
+          const active = [];
+          T[g].forEach((t, i) => {
+            for (let j = 0; j < seedsOf(t); j++) active.push(dots[i][j]);
+          });
+          tl.fromTo(active, { opacity: 0, scale: 0.2, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, transformOrigin: "50% 50%", duration: 0.3, ease: "back.out(2)", stagger: 0.008 }, t0);
+          if (g < 11) {
+            tl.to(active, { opacity: 0, y: -22, duration: 0.3, ease: "power1.in" }, t0 + 0.6);
+            tl.set(active, { y: 0 }, t0 + 0.92);
+            plants.forEach((p, i) => {
+              tl.to(p.leaves, { fill: colAt(T[g + 1][i]), duration: 0.4, ease: "sine.inOut" }, t0 + 0.5);
+            });
+          }
+        }
+
+        show("#c4a", 34.9, 40.1);
+        show("#tVariation", 35.0, 40.1);
+        show("#c4b", 40.4, 45.7);
+        show("#tInheritance", 40.5, 45.7);
+        show("#c4c", 46.0, 53.8);
+        show("#tSelection", 46.1, 53.8);
+      })();
+
+      /* =================================================================
+         SCENE 5  -  leaves reshape (54-68s)
+      ================================================================= */
+      (function () {
+        const s = $("#art5");
+        el("rect", { x: 0, y: 0, width: 1920, height: 1080, fill: "#f3f8ec" }, s);
+        bokeh(s, 6);
+        const CX = 960;
+        const BY = 700;
+        // soil + stem
+        el("ellipse", { cx: CX, cy: 850, rx: 520, ry: 50, fill: "#6a4a2e" }, s);
+        for (let i = 0; i < 26; i++) el("circle", { cx: rr(500, 1420), cy: rr(826, 872), r: rr(3, 8), fill: i % 2 ? "#8a6240" : "#4a3220" }, s);
+        el("path", { d: `M${CX} ${BY} C${CX - 10} ${BY + 60} ${CX + 10} ${BY + 100} ${CX} 830`, fill: "none", stroke: "#1f7a45", "stroke-width": 16, "stroke-linecap": "round" }, s);
+
+        // vessel parameters per stage: half-width, height, curve power, neck, thickness, taper
+        const ST = [
+          { w: 350, h: 0, k: 2, c: 0, T: 24, m: 0.9 },
+          { w: 335, h: 110, k: 2, c: 0, T: 20, m: 0.6 },
+          { w: 215, h: 240, k: 3, c: 0.18, T: 14, m: 0.1 },
+          { w: 205, h: 400, k: 3, c: 0.62, T: 14, m: 0 },
+        ];
+        const N = 44;
+        const defs = el("defs", {}, s);
+        const clip = el("clipPath", { id: "vesselClip" }, defs);
+        const clipPoly = el("path", { d: "" }, clip);
+        const fluidG = el("g", { "clip-path": "url(#vesselClip)" }, s);
+        const fluid = el("rect", { x: CX - 400, y: BY, width: 800, height: 400, fill: "#7fc1e8", opacity: 0.9 }, fluidG);
+        const fluidTop = el("rect", { x: CX - 400, y: BY, width: 800, height: 8, fill: "#b8dff5" }, fluidG);
+        // insect (drawn before the walls so the walls stay in front)
+        const b = bug(s);
+        gsap.set(b.g, { x: 925, y: -120, scale: 0.85, rotation: 172, opacity: 0 });
+        const wall = el("path", { d: "", fill: "#2e9b57", stroke: "#1f7a45", "stroke-width": 5, "stroke-linejoin": "round" }, s);
+        const rimL = el("circle", { r: 20, fill: AMBER, stroke: "#b36b00", "stroke-width": 4, opacity: 0 }, s);
+        const rimR = el("circle", { r: 20, fill: AMBER, stroke: "#b36b00", "stroke-width": 4, opacity: 0 }, s);
+
+        const P = { s: 0, lv: 0 };
+        const lerp = (a, b, f) => a + (b - a) * f;
+        function geom(sv) {
+          const i = Math.min(2, Math.floor(sv));
+          const f = sv - i;
+          const A = ST[i];
+          const B = ST[Math.min(3, i + 1)];
+          const p = {};
+          for (const k in A) p[k] = lerp(A[k], B[k], f);
+          return p;
+        }
+        function render() {
+          const p = geom(P.s);
+          const pts = [];
+          const left = [];
+          const right = [];
+          for (let i = 0; i <= N; i++) {
+            const u = -1 + (2 * i) / N;
+            const au = Math.abs(u);
+            const x = CX + p.w * u * (1 - p.c * Math.pow(au, 4));
+            const y = BY - p.h * Math.pow(au, p.k);
+            pts.push([x, y]);
+          }
+          for (let i = 0; i <= N; i++) {
+            const a = pts[Math.max(0, i - 1)];
+            const c = pts[Math.min(N, i + 1)];
+            let tx = c[0] - a[0];
+            let ty = c[1] - a[1];
+            const L = Math.hypot(tx, ty) || 1;
+            tx /= L; ty /= L;
+            const u = -1 + (2 * i) / N;
+            const th = p.T * (1 - p.m * u * u) + 1.5;
+            // normal pointing "outside" (away from the cup interior): rotate tangent
+            left.push([pts[i][0] + ty * th, pts[i][1] - tx * th]);
+            right.push([pts[i][0] - ty * th, pts[i][1] + tx * th]);
+          }
+          const poly = (arr) => arr.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ");
+          wall.setAttribute("d", poly(left) + " " + right.reverse().map((q) => "L" + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ") + "Z");
+          clipPoly.setAttribute("d", poly(pts) + "Z");
+          const top = BY - P.lv * 150;
+          fluid.setAttribute("y", top.toFixed(1));
+          fluidTop.setAttribute("y", top.toFixed(1));
+          rimL.setAttribute("cx", pts[0][0].toFixed(1));
+          rimL.setAttribute("cy", pts[0][1].toFixed(1));
+          rimR.setAttribute("cx", pts[N][0].toFixed(1));
+          rimR.setAttribute("cy", pts[N][1].toFixed(1));
+        }
+        render();
+        const upd = { onUpdate: render };
+        // morph timeline (each segment ease-in-out)
+        tl.to(P, Object.assign({ s: 1, duration: 1.7, ease: "sine.inOut" }, upd), 57.0);
+        tl.to(P, Object.assign({ s: 2, duration: 1.7, ease: "sine.inOut" }, upd), 60.4);
+        tl.to(P, Object.assign({ lv: 0.62, duration: 1.4, ease: "sine.inOut" }, upd), 61.8);
+        tl.to(P, Object.assign({ s: 3, duration: 1.6, ease: "sine.inOut" }, upd), 63.4);
+        tl.to(P, Object.assign({ lv: 0.9, duration: 1.4, ease: "sine.inOut" }, upd), 63.6);
+        tl.to([rimL, rimR], { opacity: 1, duration: 0.6 }, 62.6);
+
+        // lid over the mouth
+        const g3 = geom(3);
+        const rimX = CX + g3.w * (1 - g3.c);
+        const rimY = BY - g3.h;
+        const lid = el("path", { d: leafPath(rimX, rimY - 12, 180, 175, 30), fill: "#2e9b57", stroke: "#1f7a45", "stroke-width": 5 }, s);
+        gsap.set(lid, { opacity: 0 });
+        tl.fromTo(lid, { opacity: 0, rotation: 0, svgOrigin: `${rimX.toFixed(1)} ${(rimY - 14).toFixed(1)}` }, { opacity: 1, rotation: 0, duration: 0.5, svgOrigin: `${rimX.toFixed(1)} ${(rimY - 14).toFixed(1)}` }, 64.9);
+        tl.to(lid, { rotation: 48, svgOrigin: `${rimX.toFixed(1)} ${(rimY - 14).toFixed(1)}`, duration: 0.9, ease: "sine.inOut" }, 65.3);
+
+        // insect falls in
+        tl.fromTo(b.g, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 65.4);
+        tl.to(b.g, { y: 552, rotation: 200, duration: 1.3, ease: "power2.in" }, 65.5);
+        tl.to(b.g, { y: 600, opacity: 0.55, duration: 1.2, ease: "sine.out" }, 66.8);
+        const ripple = el("ellipse", { cx: 925, cy: BY - 0.9 * 150 + 4, rx: 10, ry: 4, fill: "none", stroke: "#e8f5fc", "stroke-width": 5, opacity: 0 }, s);
+        tl.fromTo(ripple, { opacity: 0.9, attr: { rx: 10, ry: 4 } }, { opacity: 0, attr: { rx: 70, ry: 20 }, duration: 0.9, ease: "power1.out" }, 66.8);
+
+        // stage labels
+        show("#st0", 54.7, 57.9, 0);
+        show("#st1", 58.0, 61.0, 0);
+        show("#st2", 61.3, 64.1, 0);
+        tl.fromTo("#st3", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 64.6);
+
+        show("#c5a", 54.9, 60.7);
+        show("#c5b", 61.1, 67.9);
+      })();
+
+      /* =================================================================
+         SCENE 6  -  convergent evolution (68-82s)
+      ================================================================= */
+      (function () {
+        const s = $("#art6");
+        el("rect", { x: 0, y: 0, width: 1920, height: 1080, fill: "#f3f8ec" }, s);
+        bokeh(s, 8);
+        ["#card1", "#card2", "#card3", "#card4"].forEach((c, i) => {
+          tl.fromTo(c, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 68.9 + i * 0.55);
+        });
+        // Venus flytrap snaps shut
+        tl.fromTo("#ftUp", { rotation: -34, svgOrigin: "56 150" }, { rotation: -34, svgOrigin: "56 150", duration: 0.01 }, 69.0);
+        tl.to("#ftUp", { rotation: 0, svgOrigin: "56 150", duration: 0.22, ease: "power4.in" }, 78.6);
+        tl.to("#ftLow", { rotation: 0, svgOrigin: "56 150", duration: 0.01 }, 78.6);
+        tl.to("#card4", { scale: 1.03, transformOrigin: "50% 50%", duration: 0.2, ease: "power2.out", yoyo: true, repeat: 1 }, 78.8);
+
+        show("#c6a", 68.8, 74.7);
+        show("#c6b", 75.1, 81.9);
+        show("#tConvergent", 75.2, 81.9);
+      })();
+
+      /* =================================================================
+         SCENE 7  -  discussion question (82-90s)
+      ================================================================= */
+      (function () {
+        const s = $("#art7");
+        el("rect", { x: 0, y: 0, width: 1920, height: 1080, fill: "#f3f8ec" }, s);
+        bokeh(s, 8);
+        [[240, "#3b9c5a"], [1680, "#3b9c5a"]].forEach(([x], k) => {
+          el("ellipse", { cx: x, cy: 985, rx: 210, ry: 70, fill: "#6a4a2e" }, s);
+          for (let i = 0; i < 12; i++) el("circle", { cx: x + rr(-170, 170), cy: 985 + rr(-30, 40), r: rr(3, 8), fill: i % 2 ? "#8a6240" : "#4a3220" }, s);
+          const p = plant(s, { x, y: 960, h: 250, n: 6, L: 120, sw: 13, stem: "#1f7a45", leaf: "#2e9b57", leaf2: "#3fb069", lean: k ? -8 : 8 });
+          tl.fromTo(p.g, { scale: 0.85, svgOrigin: `${x} 960` }, { scale: 1, svgOrigin: `${x} 960`, duration: 6, ease: "sine.out" }, 82.2);
+          for (let i = 0; i < 5; i++) {
+            const g = nutrient(s, 10);
+            const sx = x + rr(-170, 170);
+            gsap.set(g, { opacity: 0 });
+            tl.fromTo(g, { x: sx, y: 1030, opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: false }, 83 + i * 0.9 + k * 0.3);
+            tl.to(g, { x: x + rr(-30, 30), y: 975, duration: 1.6, ease: "sine.inOut" }, 83.2 + i * 0.9 + k * 0.3);
+            tl.to(g, { opacity: 0, duration: 0.3 }, 84.7 + i * 0.9 + k * 0.3);
+          }
+        });
+        tl.fromTo("#qmark", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.7)" }, 82.3);
+        tl.fromTo("#q", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 82.5);
+      })();
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
